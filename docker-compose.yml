@@ -1,0 +1,53 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: scoreboard-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-scoreboard}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-scoreboard_pass}
+      POSTGRES_DB: ${POSTGRES_DB:-scoreboard_db}
+    ports:
+      - '5432:5432'
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER:-scoreboard} -d ${POSTGRES_DB:-scoreboard_db}']
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  backend:
+    build:
+      context: .
+      dockerfile: apps/backend/Dockerfile
+    container_name: scoreboard-backend
+    restart: unless-stopped
+    ports:
+      - '4000:4000'
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-scoreboard}:${POSTGRES_PASSWORD:-scoreboard_pass}@postgres:5432/${POSTGRES_DB:-scoreboard_db}
+      PORT: 4000
+      NODE_ENV: production
+      FRONTEND_URL: http://localhost:3000
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: .
+      dockerfile: apps/frontend/Dockerfile
+      args:
+        NEXT_PUBLIC_BACKEND_URL: ${NEXT_PUBLIC_BACKEND_URL:-http://localhost:4000}
+    container_name: scoreboard-frontend
+    restart: unless-stopped
+    ports:
+      - '3000:3000'
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      HOSTNAME: 0.0.0.0
+    depends_on:
+      - backend
+

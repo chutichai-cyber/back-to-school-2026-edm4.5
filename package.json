@@ -1,0 +1,27 @@
+{
+  "name": "scoreboard-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "packageManager": "pnpm@9.1.0",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "pnpm --parallel --filter='!scoreboard-monorepo' dev",
+    "dev:backend": "pnpm --filter @scoreboard/backend dev",
+    "dev:frontend": "pnpm --filter @scoreboard/frontend dev",
+    "build": "pnpm --recursive build",
+    "lint": "pnpm --recursive lint",
+    "format": "prettier --write \"**/*.{js,jsx,json,md,css}\" --ignore-path .gitignore",
+    "db:migrate": "pnpm --filter @scoreboard/backend db:migrate",
+    "db:seed": "pnpm --filter @scoreboard/backend db:seed",
+    "docker:up": "docker compose up --build",
+    "docker:down": "docker compose down",
+    "docker:clean": "docker compose down -v --remove-orphans"
+  },
+  "devDependencies": {
+    "eslint": "^8.57.0",
+    "prettier": "^3.3.2"
+  }
+}

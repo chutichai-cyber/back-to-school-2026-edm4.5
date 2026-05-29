@@ -1,0 +1,168 @@
+generator client {
+  provider      = "prisma-client-js"
+  // native   = local dev (macOS / Linux)
+  // linux-musl-openssl-3.0.x = Docker Alpine (bun:alpine image)
+  // linux-openssl-3.0.x      = Railway / Render (Debian)
+  binaryTargets = ["native", "debian-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Enums ──────────────────────────────────────────────────────────────────
+
+enum GameStatus {
+  PENDING
+  ACTIVE
+  FINISHED
+}
+
+enum AdminRole {
+  SUPER_ADMIN
+  ADMIN
+  VIEWER
+}
+
+// Where a score change originated.
+enum ScoreSource {
+  SOCKET   // change via Socket.IO event (live admin panel)
+  REST     // change via REST API
+  ADMIN    // explicit admin-authenticated REST call
+  SEED     // database seed
+}
+
+// ─── Event ──────────────────────────────────────────────────────────────────
+
+model Event {
+  id        Int      @id @default(autoincrement())
+  title     String   @default("School Scoreboard")
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  games Game[]
+
+  // Fast lookup for "find active event" query
+  @@index([active])
+  @@map("events")
+}
+
+// ─── Team ───────────────────────────────────────────────────────────────────
+
+model Team {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  // Denormalized total score — kept in sync by syncTeamScore()
+  // Stored for instant O(1) ranking without a SUM aggregate on every request
+  score     Int      @default(0)
+  color     String   @default("#6366f1")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  scores        Score[]
+  scoreHistories ScoreHistory[]
+
+  // Descending index covers the ORDER BY score DESC ranking query
+  @@index([score(sort: Desc)])
+  @@map("teams")
+}
+
+// ─── Game ────────────────────────────────────────────────────────────────────
+
+model Game {
+  id        Int        @id @default(autoincrement())
+  eventId   Int
+  event     Event      @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  name      String
+  status    GameStatus @default(PENDING)
+  startsAt  DateTime?
+  endsAt    DateTime?
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  scores        Score[]
+  scoreHistories ScoreHistory[]
+
+  @@index([eventId])
+  @@index([status])
+  // Composite covers "games for event X with status Y" filter
+  @@index([eventId, status])
+  @@map("games")
+}
+
+// ─── Score ───────────────────────────────────────────────────────────────────
+// Represents the current points a team has earned in a specific game.
+// One row per (team, game) pair — updated in place on each score change.
+
+model Score {
+  id        Int      @id @default(autoincrement())
+  teamId    Int
+  team      Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  gameId    Int
+  game      Game     @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  points    Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([teamId, gameId])
+  // Individual FKs indexed for JOIN performance
+  @@index([teamId])
+  @@index([gameId])
+  @@map("scores")
+}
+
+// ─── ScoreHistory ─────────────────────────────────────────────────────────────
+// Append-only audit log.  Never deleted or updated — one row per score change event.
+
+model ScoreHistory {
+  id           Int         @id @default(autoincrement())
+  teamId       Int
+  team         Team        @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  // gameId is null when the change is a direct team-level adjustment (socket events)
+  gameId       Int?
+  game         Game?       @relation(fields: [gameId], references: [id], onDelete: SetNull)
+  // adminId is null when the change came from unauthenticated sources
+  adminId      Int?
+  admin        Admin?      @relation(fields: [adminId], references: [id], onDelete: SetNull)
+
+  delta        Int         // positive = increase, negative = decrease
+  pointsBefore Int         // team total score before this change
+  pointsAfter  Int         // team total score after this change
+  reason       String?     // optional human-readable note
+  source       ScoreSource @default(SOCKET)
+
+  createdAt    DateTime    @default(now())
+
+  // Time-series and per-entity lookups
+  @@index([teamId])
+  @@index([gameId])
+  @@index([adminId])
+  @@index([createdAt(sort: Desc)])
+  // Covers "history for team X in game Y"
+  @@index([teamId, gameId])
+  // Covers "latest history for a team" (realtime ranking feed)
+  @@index([teamId, createdAt(sort: Desc)])
+  @@map("score_histories")
+}
+
+// ─── Admin ───────────────────────────────────────────────────────────────────
+
+model Admin {
+  id           Int       @id @default(autoincrement())
+  username     String    @unique
+  email        String    @unique
+  passwordHash String
+  role         AdminRole @default(ADMIN)
+  active       Boolean   @default(true)
+  lastLoginAt  DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  scoreHistories ScoreHistory[]
+
+  @@index([active])
+  @@index([role])
+  @@map("admins")
+}

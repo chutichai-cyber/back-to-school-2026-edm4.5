@@ -1,0 +1,141 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ─── Base ────────────────────────────────────────────── */
+@layer base {
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+
+  html {
+    /* Prevent overscroll bounce on kiosk screens */
+    overscroll-behavior: none;
+  }
+
+  body {
+    background-color: #050c1a;
+    color: #f8fafc;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+/* ─── GPU hint utilities ──────────────────────────────── */
+@layer utilities {
+  .gpu {
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    perspective: 1000px;
+  }
+
+  .contain-layout {
+    contain: layout style;
+  }
+}
+
+/* ─── Kiosk mode (toggled via JS on /display) ─────────── */
+.kiosk {
+  cursor: none !important;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* ─── Display page layout ─────────────────────────────── */
+.display-root {
+  width: 100dvw;
+  height: 100dvh;
+  overflow: hidden;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  position: relative;
+  /* Promote the whole display to its own GPU layer */
+  transform: translateZ(0);
+}
+
+/* Stadium atmosphere background — pure CSS, no images */
+.display-bg {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    radial-gradient(ellipse 90% 55% at 50% -5%,  rgba(99,102,241,0.22) 0%, transparent 65%),
+    radial-gradient(circle    at  6% 75%,          rgba(245,158,11,0.09) 0%, transparent 38%),
+    radial-gradient(circle    at 94% 20%,          rgba(16,185,129,0.07) 0%, transparent 35%);
+}
+
+/* Subtle dot grid overlay */
+.display-bg::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgba(255,255,255,0.04) 1px, transparent 1px);
+  background-size: 32px 32px;
+  mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 100%);
+}
+
+/* ─── Display header ──────────────────────────────────── */
+.display-header {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(0.7rem, 2vh, 1.6rem) clamp(1rem, 4vw, 3rem);
+  border-bottom: 1px solid rgba(99,102,241,0.18);
+  background: linear-gradient(180deg, rgba(5,12,26,0.85) 0%, rgba(5,12,26,0.35) 100%);
+}
+
+.display-eyebrow {
+  font-size: clamp(0.6rem, 1vw, 0.8rem);
+  font-weight: 700;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: rgba(252,211,77,0.55);
+  margin-bottom: 0.3em;
+  text-align: center;
+}
+
+.display-title {
+  font-size: clamp(1.6rem, 3.8vw, 3.2rem);
+  font-weight: 900;
+  letter-spacing: -0.025em;
+  line-height: 1.1;
+  text-align: center;
+  color: #fcd34d;
+  text-shadow:
+    0 0 40px rgba(252,211,77,0.55),
+    0 0 90px rgba(252,211,77,0.18);
+}
+
+/* ─── Display content area ────────────────────────────── */
+.display-content {
+  position: relative;
+  z-index: 10;
+  padding: clamp(0.6rem, 1.2vh, 1rem) clamp(0.8rem, 3.5vw, 2.5rem);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* ─── Admin page ──────────────────────────────────────── */
+.admin-input {
+  background: rgba(30,41,59,0.8);
+  border: 1px solid rgba(71,85,105,0.6);
+  color: #f8fafc;
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.admin-input:focus {
+  border-color: rgba(99,102,241,0.7);
+  box-shadow: 0 0 0 3px rgba(99,102,241,0.15);
+}
+
+.admin-input::placeholder {
+  color: rgba(148,163,184,0.5);
+}
