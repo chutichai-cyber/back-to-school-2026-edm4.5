@@ -11,8 +11,14 @@ let _prevOrder = []
 
 // ── Helpers ─────────────────────────────────────────────────────────────────
 
+// Dense ranking: tied scores share the same rank, next group increments by 1
+// e.g. scores [1000, 200, 200, 150, 100, 100] → ranks [1, 2, 2, 3, 4, 4]
 function addRanks(teams) {
-  return teams.map((t, i) => ({ ...t, rank: i + 1 }))
+  let rank = 1
+  return teams.map((t, i, arr) => {
+    if (i > 0 && arr[i - 1].score !== t.score) rank++
+    return { ...t, rank }
+  })
 }
 
 function orderChanged(teams) {

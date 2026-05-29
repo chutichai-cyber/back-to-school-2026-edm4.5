@@ -34,7 +34,7 @@ export default function ScoreNumber({ value, color, className = '', style = {} }
 
   return (
     <span
-      className={`tabular-nums font-black leading-none inline-block transition-transform duration-300 ease-out ${
+      className={`font-fredoka font-semibold tabular-nums leading-none inline-block transition-transform duration-300 ease-out ${
         bump ? 'scale-125' : 'scale-100'
       } ${className}`}
       style={{

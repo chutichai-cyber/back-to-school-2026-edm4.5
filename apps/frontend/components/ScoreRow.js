@@ -2,7 +2,6 @@
 
 import { motion } from 'framer-motion'
 import RankBadge from './RankBadge'
-import TeamAvatar from './TeamAvatar'
 import ScoreNumber from './ScoreNumber'
 
 const ROW_VARIANTS = {
@@ -11,9 +10,30 @@ const ROW_VARIANTS = {
   exit:    { opacity: 0, scale: 0.95, transition: { duration: 0.2 } },
 }
 
-export default function ScoreRow({ team, rank }) {
-  const isFirst = rank === 1
+function rowStyle(rank, color) {
+  if (rank === 1) return {
+    background:  `linear-gradient(135deg, ${color}44 0%, ${color}1a 100%)`,
+    borderLeft:  `5px solid ${color}`,
+    boxShadow:   `0 4px 32px ${color}50, inset 0 1px 0 rgba(255,255,255,0.07)`,
+  }
+  if (rank === 2) return {
+    background:  `linear-gradient(135deg, ${color}2e 0%, ${color}10 100%)`,
+    borderLeft:  `5px solid ${color}cc`,
+    boxShadow:   `0 3px 22px ${color}35`,
+  }
+  if (rank === 3) return {
+    background:  `linear-gradient(135deg, ${color}1c 0%, ${color}08 100%)`,
+    borderLeft:  `5px solid ${color}99`,
+    boxShadow:   `0 2px 14px ${color}22`,
+  }
+  return {
+    background:  'rgba(13, 20, 40, 0.38)',
+    borderLeft:  `4px solid ${color}55`,
+    boxShadow:   '0 1px 6px rgba(0,0,0,0.18)',
+  }
+}
 
+export default function ScoreRow({ team, rank }) {
   return (
     <motion.div
       layout
@@ -26,27 +46,27 @@ export default function ScoreRow({ team, rank }) {
         opacity: { duration: 0.22 },
         x: { duration: 0.25, ease: 'easeOut' },
       }}
-      // GPU promotion — avoid layout thrashing on transform-based animation
       className="flex items-center gap-4 rounded-2xl will-change-transform overflow-hidden"
       style={{
         padding: 'clamp(0.65rem, 1.2vh, 1rem) clamp(0.9rem, 1.5vw, 1.25rem)',
-        background: isFirst
-          ? `linear-gradient(135deg, ${team.color}22 0%, ${team.color}0a 100%)`
-          : 'rgba(13, 20, 40, 0.72)',
-        borderLeft: `4px solid ${team.color}`,
-        boxShadow: isFirst
-          ? `0 4px 28px ${team.color}28, inset 0 1px 0 rgba(255,255,255,0.04)`
-          : '0 2px 12px rgba(0,0,0,0.35)',
         backdropFilter: 'blur(12px)',
         WebkitBackdropFilter: 'blur(12px)',
+        ...rowStyle(rank, team.color),
       }}
     >
       <RankBadge rank={rank} />
-      <TeamAvatar name={team.name} color={team.color} />
 
       <span
-        className="flex-1 text-white font-bold truncate leading-tight"
-        style={{ fontSize: 'clamp(0.95rem, 1.8vw, 1.35rem)' }}
+        className="flex-1 text-white font-kanit font-semibold truncate leading-tight"
+        style={{
+          fontSize: rank === 1
+            ? 'clamp(1.3rem, 2.6vw, 2rem)'
+            : rank === 2
+            ? 'clamp(1.15rem, 2.2vw, 1.7rem)'
+            : rank === 3
+            ? 'clamp(1.05rem, 2.0vw, 1.5rem)'
+            : 'clamp(0.9rem, 1.6vw, 1.25rem)',
+        }}
       >
         {team.name}
       </span>

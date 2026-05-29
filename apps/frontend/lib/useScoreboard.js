@@ -6,7 +6,12 @@ import { SOCKET_EVENTS } from '@scoreboard/shared'
 import { MOCK_TEAMS, MOCK_EVENT } from './mockData'
 
 function sortTeams(teams) {
-  return [...teams].sort((a, b) => b.score - a.score || a.name.localeCompare(b.name))
+  const sorted = [...teams].sort((a, b) => b.score - a.score || a.name.localeCompare(b.name))
+  let rank = 1
+  return sorted.map((t, i, arr) => {
+    if (i > 0 && arr[i - 1].score !== t.score) rank++
+    return { ...t, rank }
+  })
 }
 
 export function useScoreboard({ mock = false } = {}) {

@@ -12,8 +12,8 @@ export default function ScoreBoard({ teams }) {
         so all rows appear instantly on page load, then animate on changes.
       */}
       <AnimatePresence mode="popLayout" initial={false}>
-        {teams.map((team, index) => (
-          <ScoreRow key={team.id} team={team} rank={index + 1} />
+        {teams.map((team) => (
+          <ScoreRow key={team.id} team={team} rank={team.rank} />
         ))}
       </AnimatePresence>
     </div>

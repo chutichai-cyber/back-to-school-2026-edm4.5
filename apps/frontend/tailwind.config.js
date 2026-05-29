@@ -8,7 +8,9 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['var(--font-inter)', 'Inter', 'system-ui', 'sans-serif'],
+        sans:   ['var(--font-inter)', 'Inter', 'system-ui', 'sans-serif'],
+        kanit:  ['var(--font-kanit)', 'Kanit', 'sans-serif'],
+        fredoka: ['var(--font-fredoka)', 'Fredoka', 'sans-serif'],
       },
       colors: {
         stadium: {
