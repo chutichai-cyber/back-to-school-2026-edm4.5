@@ -1,0 +1,20 @@
+# Local development — starts PostgreSQL only.
+# Run `pnpm dev` separately to get hot-reload for both apps.
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: scoreboard-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER:     ${POSTGRES_USER:-scoreboard}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-scoreboard_pass}
+      POSTGRES_DB:       ${POSTGRES_DB:-scoreboard_db}
+    ports:
+      - '5432:5432'
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER:-scoreboard} -d ${POSTGRES_DB:-scoreboard_db}']
+      interval: 5s
+      timeout: 5s
+      retries: 20
