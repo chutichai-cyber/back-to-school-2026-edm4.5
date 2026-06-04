@@ -34,10 +34,8 @@ WORKDIR /app/apps/backend
 EXPOSE 4000
 ENV NODE_ENV=production
 
-# prisma generate runs at container start (needs no DB connection, only schema).
-# prisma migrate deploy then applies pending migrations before the server starts.
 CMD ["sh", "-c", \
   "./node_modules/.bin/prisma generate --schema=./prisma/schema.prisma \
-   && ./node_modules/.bin/prisma migrate deploy --schema=./prisma/schema.prisma \
+   && ./node_modules/.bin/prisma db push --schema=./prisma/schema.prisma --accept-data-loss \
    && bun prisma/seed.js \
    && bun run src/index.js"]
