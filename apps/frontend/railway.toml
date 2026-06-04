@@ -1,6 +1,6 @@
 [build]
 builder        = "DOCKERFILE"
-dockerfilePath = "apps/frontend/Dockerfile"
+dockerfilePath = "Dockerfile"
 
 # NEXT_PUBLIC_BACKEND_URL is baked into the Next.js build at compile time,
 # so it must be forwarded as a Docker build argument from the Railway variable.
