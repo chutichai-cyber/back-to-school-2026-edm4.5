@@ -1,37 +1,15 @@
-const BADGE = {
-  1: {
-    gradient: 'from-yellow-400 via-amber-400 to-yellow-500',
-    ring:     'ring-amber-300/40',
-    shadow:   '0 0 16px rgba(251,191,36,0.5)',
-    text:     'text-amber-900',
-  },
-  2: {
-    gradient: 'from-slate-200 via-slate-300 to-slate-400',
-    ring:     'ring-slate-300/30',
-    shadow:   '0 0 10px rgba(148,163,184,0.3)',
-    text:     'text-slate-700',
-  },
-  3: {
-    gradient: 'from-amber-500 via-orange-500 to-amber-600',
-    ring:     'ring-orange-400/30',
-    shadow:   '0 0 10px rgba(245,158,11,0.3)',
-    text:     'text-amber-900',
-  },
-}
+const MEDAL_IMG = { 1: '/assets/1.png', 2: '/assets/2.png', 3: '/assets/3.png' }
 
 export default function RankBadge({ rank }) {
-  const badge = BADGE[rank]
+  const medalSrc = MEDAL_IMG[rank]
 
-  if (badge) {
+  if (medalSrc) {
     return (
-      <div
-        className={`w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 bg-gradient-to-br ${badge.gradient} ring-2 ${badge.ring}`}
-        style={{ boxShadow: badge.shadow }}
-      >
-        <span className={`font-kanit font-bold leading-none text-2xl ${badge.text}`}>
-          {rank}
-        </span>
-      </div>
+      <img
+        src={medalSrc}
+        alt={`rank ${rank}`}
+        className="w-12 h-12 flex-shrink-0 object-contain"
+      />
     )
   }
 
