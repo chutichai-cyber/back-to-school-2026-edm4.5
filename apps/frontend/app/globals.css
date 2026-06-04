@@ -118,12 +118,12 @@
   flex-direction: column;
 }
 
-/* Desktop: centered column at 65% width so stadium bg shows on sides */
+/* Desktop: centered column at 60% width so stadium bg shows on sides */
 @media (min-width: 768px) {
   .scoreboard-inner {
     flex: 1;
     min-height: 0;
-    width: 65%;
+    width: 60%;
     padding: 0;
   }
 }

@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useScoreboard } from '../../lib/useScoreboard'
+import { logout } from '../../lib/auth'
 import ScoresTab from '../../components/admin/ScoresTab'
 import TeamsTab  from '../../components/admin/TeamsTab'
 import GamesTab  from '../../components/admin/GamesTab'
@@ -55,6 +56,13 @@ export default function AdminPage() {
             >
               Display ↗
             </a>
+            <button
+              onClick={logout}
+              className="text-xs text-slate-500 hover:text-red-400 transition-colors shrink-0"
+              title="Sign out"
+            >
+              Sign out
+            </button>
           </div>
         </div>
 

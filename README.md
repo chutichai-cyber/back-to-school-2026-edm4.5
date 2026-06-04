@@ -53,6 +53,129 @@ docker compose up
 
 ---
 
+## Local Development (Without Docker)
+
+### Prerequisites
+
+- [Bun](https://bun.sh) — runtime สำหรับ backend
+- Node.js 18+ — สำหรับ frontend (Next.js)
+- PostgreSQL (local หรือ cloud เช่น Neon, Supabase)
+
+ติดตั้ง Bun:
+
+```bash
+curl -fsSL https://bun.sh/install | bash
+```
+
+---
+
+### 1. ติดตั้ง Dependencies
+
+```bash
+# ถ้ามี pnpm
+pnpm install
+
+# ถ้าไม่มี pnpm — ติดตั้งแยกแต่ละ app
+cd apps/backend && bun install
+cd ../frontend && npm install
+```
+
+---
+
+### 2. ตั้งค่า Environment Variables
+
+**Backend:**
+
+```bash
+cp apps/backend/.env.example apps/backend/.env
+```
+
+แก้ไข `apps/backend/.env`:
+
+```env
+DATABASE_URL=postgresql://user:password@localhost:5432/scoreboard_db
+PORT=4000
+NODE_ENV=development
+FRONTEND_URL=http://localhost:3000
+LOG_LEVEL=info
+
+# Admin login (ไม่ใช้ database)
+ADMIN_USERNAME=admin
+ADMIN_PASSWORD=your_password
+JWT_SECRET=replace-with-a-long-random-secret
+TOKEN_EXPIRY_HOURS=8
+```
+
+**Frontend:**
+
+```bash
+cp apps/frontend/.env.local.example apps/frontend/.env.local
+```
+
+แก้ไข `apps/frontend/.env.local`:
+
+```env
+NEXT_PUBLIC_BACKEND_URL=http://localhost:4000
+```
+
+---
+
+### 3. Database Migration & Seed
+
+```bash
+cd apps/backend
+
+# สร้าง table จาก schema
+bunx prisma migrate deploy
+
+# ใส่ข้อมูลเริ่มต้น (event, teams, games, admin accounts)
+bun prisma/seed.js
+```
+
+> **ถ้าไม่มี bun** ใช้ npx แทน:
+> ```bash
+> npx prisma migrate deploy
+> node prisma/seed.js
+> ```
+
+Seed จะสร้าง admin accounts:
+
+| Username | Password | Role |
+| --- | --- | --- |
+| `superadmin` | `Admin@1234` | SUPER_ADMIN |
+| `admin` | `Admin@1234` | ADMIN |
+
+---
+
+### 4. รัน Dev Server
+
+```bash
+# Terminal 1 — Backend
+cd apps/backend
+bun dev
+
+# Terminal 2 — Frontend
+cd apps/frontend
+npm run dev
+```
+
+| Service | URL |
+| --- | --- |
+| Admin panel | http://localhost:3000/admin |
+| Display (scoreboard) | http://localhost:3000/display |
+| Backend API | http://localhost:4000 |
+
+---
+
+### Reset Database
+
+```bash
+cd apps/backend
+bunx prisma migrate reset   # ลบทุกอย่างแล้ว migrate + seed ใหม่
+```
+
+---
+
 ## Production Deployment
 
 ### ภาพรวม

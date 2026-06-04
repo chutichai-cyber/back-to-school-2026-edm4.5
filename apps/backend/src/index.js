@@ -11,6 +11,7 @@ import { gamesRouter }        from './routes/games.js'
 import { scoresRouter }       from './routes/scores.js'
 import { adminsRouter }       from './routes/admins.js'
 import { scoreHistoryRouter } from './routes/score-history.js'
+import { authRouter }         from './routes/auth.js'
 import { registerSocketHandlers } from './socket/handlers.js'
 import { logger }         from './lib/logger.js'
 import { setIO }          from './lib/io.js'
@@ -44,6 +45,7 @@ const elysia = new Elysia()
   .use(eventsRouter)
   .use(gamesRouter)
   .use(scoresRouter)
+  .use(authRouter)
   .use(adminsRouter)
   .use(scoreHistoryRouter)
 
@@ -104,7 +106,7 @@ registerSocketHandlers(io)
 httpServer.listen(PORT, '0.0.0.0', () => {
   logger.info('server started', { port: PORT, env: NODE_ENV })
   logger.info('routes', {
-    rest: ['/health', '/api/teams', '/api/events', '/api/games', '/api/scores', '/api/admins', '/api/score-history'],
+    rest: ['/health', '/api/auth/login', '/api/teams', '/api/events', '/api/games', '/api/scores', '/api/admins', '/api/score-history'],
     ws: 'ws://0.0.0.0:' + PORT + '/socket.io',
   })
 })
