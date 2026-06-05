@@ -21,7 +21,6 @@ export default function ScoresTab({ teams, event, connected, emit, lastChangedTe
   const [eventTitle, setEventTitle]         = useState('')
   const [editingTitle, setEditingTitle]     = useState(false)
   const [setScoreFor, setSetScoreFor]       = useState(null)
-  const [confirmReset, setConfirmReset]     = useState(false)
   const setScoreRef = useRef('')
 
   useEffect(() => {
@@ -36,12 +35,6 @@ export default function ScoresTab({ teams, event, connected, emit, lastChangedTe
     if (!isNaN(v)) emit(SOCKET_EVENTS.SCORE_SET, { teamId, score: v })
     setSetScoreFor(null)
     setScoreRef.current = ''
-  }
-
-  const handleReset = () => {
-    emit(SOCKET_EVENTS.SCORE_RESET)
-    setConfirmReset(false)
-    showToast?.('All scores reset to 0', 'success')
   }
 
   const handleTitleSave = () => {
@@ -103,30 +96,6 @@ export default function ScoresTab({ teams, event, connected, emit, lastChangedTe
       <section className="bg-slate-800/70 ring-1 ring-slate-700/50 rounded-2xl p-5">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xs font-bold text-slate-400 uppercase tracking-widest">Live Scores</h2>
-          {confirmReset ? (
-            <div className="flex items-center gap-1.5">
-              <span className="text-xs text-red-300 font-semibold">Reset all?</span>
-              <button
-                onClick={handleReset}
-                className="text-xs px-2.5 py-1.5 bg-red-600 hover:bg-red-500 text-white rounded-lg font-semibold transition-colors"
-              >
-                Yes
-              </button>
-              <button
-                onClick={() => setConfirmReset(false)}
-                className="text-xs px-2.5 py-1.5 bg-slate-600 hover:bg-slate-500 text-slate-200 rounded-lg transition-colors"
-              >
-                Cancel
-              </button>
-            </div>
-          ) : (
-            <button
-              onClick={() => setConfirmReset(true)}
-              className="text-xs px-3 py-1.5 bg-red-700/60 hover:bg-red-600 text-red-200 rounded-lg font-semibold transition-colors"
-            >
-              Reset All
-            </button>
-          )}
         </div>
 
         <div className="space-y-2">
