@@ -25,6 +25,8 @@ services:
     restart: unless-stopped
     ports:
       - '4000:4000'
+    env_file:
+      - apps/backend/.env
     environment:
       DATABASE_URL: postgresql://${POSTGRES_USER:-scoreboard}:${POSTGRES_PASSWORD:-scoreboard_pass}@postgres:5432/${POSTGRES_DB:-scoreboard_db}
       PORT: 4000
