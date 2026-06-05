@@ -1,8 +1,5 @@
 generator client {
   provider      = "prisma-client-js"
-  // native   = local dev (macOS / Linux)
-  // linux-musl-openssl-3.0.x = Docker Alpine (bun:alpine image)
-  // linux-openssl-3.0.x      = Railway / Render (Debian)
   binaryTargets = ["native", "debian-openssl-3.0.x"]
 }
 

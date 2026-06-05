@@ -17,6 +17,7 @@
     "db:migrate": "pnpm --filter @scoreboard/backend db:migrate",
     "db:seed": "pnpm --filter @scoreboard/backend db:seed",
     "docker:up": "docker compose up --build",
+    "docker:seed": "docker exec scoreboard-backend bun prisma/seed.js",
     "docker:down": "docker compose down",
     "docker:clean": "docker compose down -v --remove-orphans"
   },

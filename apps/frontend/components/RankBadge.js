@@ -1,7 +1,7 @@
 const MEDAL_IMG = { 1: '/assets/1.png', 2: '/assets/2.png', 3: '/assets/3.png' }
 
-export default function RankBadge({ rank }) {
-  const medalSrc = MEDAL_IMG[rank]
+export default function RankBadge({ rank, showMedal = true }) {
+  const medalSrc = showMedal ? MEDAL_IMG[rank] : null
 
   if (medalSrc) {
     return (

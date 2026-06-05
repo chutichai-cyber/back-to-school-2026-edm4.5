@@ -33,7 +33,11 @@ function rowStyle(rank, color) {
   }
 }
 
-export default function ScoreRow({ team, rank }) {
+export default function ScoreRow({ team, rank, position, allZero }) {
+  // When all scores are zero: show sequential position numbers, no medal/highlight styling
+  const displayRank = allZero ? position : rank
+  const styleRank   = allZero ? null : rank
+
   return (
     <motion.div
       layout
@@ -51,19 +55,19 @@ export default function ScoreRow({ team, rank }) {
         padding: 'clamp(0.65rem, 1.2vh, 1rem) clamp(0.9rem, 1.5vw, 1.25rem)',
         backdropFilter: 'blur(12px)',
         WebkitBackdropFilter: 'blur(12px)',
-        ...rowStyle(rank, team.color),
+        ...rowStyle(styleRank, team.color),
       }}
     >
-      <RankBadge rank={rank} />
+      <RankBadge rank={displayRank} showMedal={!allZero} />
 
       <span
         className="flex-1 text-white font-kanit font-semibold truncate leading-tight"
         style={{
-          fontSize: rank === 1
+          fontSize: !allZero && rank === 1
             ? 'clamp(1.3rem, 2.6vw, 2rem)'
-            : rank === 2
+            : !allZero && rank === 2
             ? 'clamp(1.15rem, 2.2vw, 1.7rem)'
-            : rank === 3
+            : !allZero && rank === 3
             ? 'clamp(1.05rem, 2.0vw, 1.5rem)'
             : 'clamp(0.9rem, 1.6vw, 1.25rem)',
         }}
@@ -75,7 +79,6 @@ export default function ScoreRow({ team, rank }) {
         value={team.score}
         color={team.color}
         className="leading-none"
-        // font-size via inline style so it scales with viewport width
         style={{ fontSize: 'clamp(2rem, 4.5vw, 3.75rem)' }}
       />
     </motion.div>

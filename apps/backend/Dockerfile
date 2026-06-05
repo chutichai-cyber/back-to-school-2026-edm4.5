@@ -13,6 +13,11 @@ COPY apps/backend/prisma                     ./apps/backend/prisma
 
 RUN pnpm install --ignore-scripts
 
+# Generate Prisma client here while pnpm symlinks are intact.
+# Running in the runner stage after COPY breaks the .pnpm virtual-store paths.
+WORKDIR /app/apps/backend
+RUN ./node_modules/.bin/prisma generate --schema=./prisma/schema.prisma
+
 # ── runner ────────────────────────────────────────────────────────────────────
 FROM oven/bun:1.1 AS runner
 RUN apt-get update -qq \
@@ -35,7 +40,5 @@ EXPOSE 4000
 ENV NODE_ENV=production
 
 CMD ["sh", "-c", \
-  "./node_modules/.bin/prisma generate --schema=./prisma/schema.prisma \
-   && ./node_modules/.bin/prisma db push --schema=./prisma/schema.prisma --accept-data-loss \
-   && bun prisma/seed.js \
+  "./node_modules/.bin/prisma db push --schema=./prisma/schema.prisma --accept-data-loss \
    && bun run src/index.js"]

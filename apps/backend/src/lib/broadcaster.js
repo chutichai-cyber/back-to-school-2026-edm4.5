@@ -28,7 +28,7 @@ function orderChanged(teams) {
 
 async function fetchState() {
   const [teams, event] = await Promise.all([
-    prisma.team.findMany({ orderBy: { score: 'desc' } }),
+    prisma.team.findMany({ orderBy: [{ score: 'desc' }, { id: 'asc' }] }),
     prisma.event.findFirst({ where: { active: true } }),
   ])
   return { teams, event }

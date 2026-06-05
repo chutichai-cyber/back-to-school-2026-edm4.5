@@ -91,6 +91,7 @@ export default function AdminPage() {
             connected={connected}
             emit={emit}
             lastChangedTeamId={lastChangedTeamId}
+            showToast={toast}
           />
         )}
         {activeTab === 'teams' && (

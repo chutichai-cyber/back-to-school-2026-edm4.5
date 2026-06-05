@@ -93,7 +93,10 @@ export function registerSocketHandlers(io) {
       SOCKET_EVENTS.SCORE_RESET,
       safe(socket, SOCKET_EVENTS.SCORE_RESET, async ({ reason } = {}) => {
         const teams = await prisma.team.findMany({ select: { id: true, score: true } })
-        await prisma.team.updateMany({ data: { score: 0 } })
+        await Promise.all([
+          prisma.team.updateMany({ data: { score: 0 } }),
+          prisma.score.updateMany({ data: { points: 0 } }),
+        ])
         const histories = teams
           .filter((t) => t.score !== 0)
           .map((t) => ({
