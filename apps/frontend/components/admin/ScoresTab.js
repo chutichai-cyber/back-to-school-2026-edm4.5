@@ -31,7 +31,7 @@ export default function ScoresTab({ teams, event, connected, emit, lastChangedTe
     emit(SOCKET_EVENTS.SCORE_UPDATE, { teamId, delta })
 
   const handleScoreSet = (teamId) => {
-    const v = parseInt(setScoreRef.current, 10)
+    const v = parseFloat(setScoreRef.current)
     if (!isNaN(v)) emit(SOCKET_EVENTS.SCORE_SET, { teamId, score: v })
     setSetScoreFor(null)
     setScoreRef.current = ''

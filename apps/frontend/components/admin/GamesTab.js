@@ -326,6 +326,7 @@ export default function GamesTab({ teams, event, showToast }) {
                               <input
                                 type="number"
                                 min="0"
+                                step="0.01"
                                 value={scoreMap[game.id]?.pts?.[team.id] ?? '0'}
                                 onChange={(e) => setPts(game.id, team.id, e.target.value)}
                                 className="admin-input w-20 text-sm text-right tabular-nums shrink-0"

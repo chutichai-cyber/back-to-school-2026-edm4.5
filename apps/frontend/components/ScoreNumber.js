@@ -23,7 +23,7 @@ export default function ScoreNumber({ value, color, className = '', style = {} }
     const controls = animate(from, value, {
       duration: value > from ? 0.7 : 0.4,
       ease: value > from ? [0.16, 1, 0.3, 1] : 'easeOut',
-      onUpdate: (v) => setDisplay(Math.round(v)),
+      onUpdate: (v) => setDisplay(parseFloat(v.toFixed(2))),
     })
 
     return () => {

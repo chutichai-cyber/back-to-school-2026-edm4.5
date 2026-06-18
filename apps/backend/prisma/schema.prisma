@@ -53,7 +53,7 @@ model Team {
   name      String   @unique
   // Denormalized total score — kept in sync by syncTeamScore()
   // Stored for instant O(1) ranking without a SUM aggregate on every request
-  score     Int      @default(0)
+  score     Float    @default(0)
   color     String   @default("#6366f1")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -99,7 +99,7 @@ model Score {
   team      Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
   gameId    Int
   game      Game     @relation(fields: [gameId], references: [id], onDelete: Cascade)
-  points    Int      @default(0)
+  points    Float    @default(0)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -124,9 +124,9 @@ model ScoreHistory {
   adminId      Int?
   admin        Admin?      @relation(fields: [adminId], references: [id], onDelete: SetNull)
 
-  delta        Int         // positive = increase, negative = decrease
-  pointsBefore Int         // team total score before this change
-  pointsAfter  Int         // team total score after this change
+  delta        Float       // positive = increase, negative = decrease
+  pointsBefore Float       // team total score before this change
+  pointsAfter  Float       // team total score after this change
   reason       String?     // optional human-readable note
   source       ScoreSource @default(SOCKET)
 
